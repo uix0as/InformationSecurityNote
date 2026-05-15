@@ -1,6 +1,12 @@
-# InformationSecurityNote
+![Information Security Banner](https://via.placeholder.com/1200x300?text=Information+Security+Note)
 
-## 보안 솔루션 구조 
+# 🛡️ InformationSecurityNote
+
+> 정보보안의 모든 것을 정리한 종합 가이드
+
+---
+
+## 📋 보안 솔루션 구조 
 ```
 Internet → F/W → Internal 
 ```
@@ -58,7 +64,6 @@ Internet → F/W → Internal
 암호시스템(Cryptosystem) 
 
 <aside>
-💡
 
 ## 암호 알고리즘 분류 
 
@@ -90,7 +95,6 @@ C/T → Key → P/T (복호화(Decryption))
 
 <aside>
 
-💡
 ## 대칭키 암호 알고리즘 
 
 **대칭키 암호 알고리즘 (암호화 키 == 복호화 키)** 
