@@ -1,8 +1,4 @@
-![Information Security Banner](https://via.placeholder.com/1200x300?text=Information+Security+Note)
-
 # 🛡️ InformationSecurityNote
-
-> 정보보안의 모든 것을 정리한 종합 가이드
 
 ---
 
