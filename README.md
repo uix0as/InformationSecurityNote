@@ -1,225 +1,152 @@
-# 🛡️ Information Security Notes
----
+<div align="center">
 
-## 목차
+# Security Study Notes
 
-- [1. 보안 솔루션 기본 구조](#1-보안-솔루션-기본-구조)
-- [2. 관련 법률/정책(국내)](#2-관련-법률정책국내)
-- [3. 암호학 기초](#3-암호학-기초)
-- [4. 대칭키 암호](#4-대칭키-암호)
-- [5. 공개키(비대칭키) 암호](#5-공개키비대칭키-암호)
-- [6. 하이브리드 암호 시스템](#6-하이브리드-암호-시스템)
-- [7. 인증서와 전자서명](#7-인증서와-전자서명)
-- [8. CIA 보안 3요소](#8-cia-보안-3요소)
-- [9. OSI 7계층 vs TCP/IP](#9-osi-7계층-vs-tcpip)
-- [10. TLS/HTTPS](#10-tlshttps)
-- [11. VPN 개념과 계층](#11-vpn-개념과-계층)
-- [12. 모의해킹 PTES](#12-모의해킹-ptes)
+네트워크와 보안 기초를 연결해서 정리한 정보보안 학습 노트입니다.
 
----
+<img src="https://img.shields.io/badge/Security-Study-1F2937?style=for-the-badge">
+<img src="https://img.shields.io/badge/Network-Basics-2563EB?style=for-the-badge">
+<img src="https://img.shields.io/badge/Linux-Command-374151?style=for-the-badge">
+<img src="https://img.shields.io/badge/Cryptography-Notes-5B5FC7?style=for-the-badge">
+<img src="https://img.shields.io/badge/Markdown-Docs-111827?style=for-the-badge">
+<img src="https://img.shields.io/badge/Defensive-Learning-2E8B57?style=for-the-badge">
 
-## 1. 보안 솔루션 기본 구조
+</div>
 
-```
-Internet → (F/W) → Internal Network
-```
+## 소개
 
-| 솔루션 | 한 줄 설명 | 예시 |
-| --- | --- | --- |
-| **Firewall (F/W)** | 정책 기반으로 트래픽을 **허용/차단** | firewalld, iptables/nftables |
-| **IDS** | 침입 징후를 **탐지**(알림/로그) | Snort, Suricata |
-| **IPS** | 침입 징후를 **탐지 후 차단**(인라인) | (장비/솔루션 형태로 제공) |
-| **UTM** | 여러 보안 기능을 **통합 제공** | 방화벽 + IPS + VPN + AV 등 |
+보안 개념을 네트워크 구조, 패킷 흐름, Linux 명령어 결과와 함께 이해하는 데 초점을 두며,
+정보보안 학습 및 방어적 이해를 목적으로 합니다.
 
-> **WAF**(웹 방화벽)는 보통 UTM에 포함되기도 하지만, 제품/구성에 따라 **별도 장비/서비스**로 운영되는 경우도 많음. 
-> 
+허가되지 않은 시스템에 대한 공격, 침투, 스캔을 목적으로 하지 않습니다.
 
----
+## 다루는 내용
 
-## 2. 관련 법률/정책(국내)
+- 보안 기본 개념과 CIA 보안 3요소
+- 국내 정보보안 관련 법률의 학습용 개요
+- 암호학 기초, 해시, 대칭키/공개키, 인증서와 전자서명
+- OSI 7계층, TCP/IP, Ethernet, ARP, IP, ICMP, TCP, UDP
+- TLS/HTTPS와 VPN
+- Linux 서버에서 네트워크 상태를 확인하는 명령어
+- PTES 모의해킹 절차의 방어적 개요
+- Rocky Linux 기반 네트워크 명령어 실습 메모 등 
 
-- **정보통신망법** (정보통신 이용 촉진 및 정보보호 등에 관한 법률)
-- **개인정보보호법** 및 시행령
-- **정보통신기반 보호법**
-- **전자서명법**
-- (+) **클라우드 관련 규정/가이드**, **위치정보법** 등
+## 폴더 구조
 
----
-
-## 3. 암호학 기초
-
-| 용어 | 의미 |
-| --- | --- |
-| **평문 (Plaintext)** | 원본 데이터 |
-| **암호문 (Ciphertext)** | 암호화된 데이터 |
-| **암호화 (Encryption)** | 평문 → 암호문 |
-| **복호화 (Decryption)** | 암호문 → 평문 |
-| **암호 해독 (Cryptanalysis)** | 암호화 알고리즘/구현을 분석해 깨려는 시도 |
-| **키 (Key)** | 암·복호화에 쓰는 값 |
-| **암호시스템 (Cryptosystem)** | 알고리즘 + 키 + 운영 방식 조합 |
-
-### 양방향(복호화 가능) vs 단방향(복호화 불가)
-
-- **대칭키 / 공개키 암호**: 복호화 가능(키가 있어야 함)
-- **해시(Hash)**: 복호화 불가(일방향). 무결성 검증 등에 사용
-
-### 해시 함수 분류
-
-#### ✅ 암호학적 해시 함수
-
-- MD5(128bit) *(현재는 충돌 취약점으로 보안 용도 비권장)*
-- SHA-1(160bit) *(현재는 보안 용도 비권장)*
-- SHA-2: SHA-224/256/384/512 *(실무 표준)*
-
-> 암호학적 해시는 **충돌 저항성**(Collision Resistance) 등이 중요함. 
-> 
-
-#### 일반(비암호학적) 해시/검증
-
-- CRC, Checksum, FCS
-    
-    → 오류 검출에는 유용하지만 **공격자 방어 목적**(무결성/서명)으로는 부족한 경우가 많음
-    
-
----
-
-## 4. 대칭키 암호
-
-- **암호화 키 = 복호화 키**
-- 장점: 빠름 / 단점: 키 공유(배포)가 어렵고 노출 시 위험
-
-| 분류 | 특징 | 예시 |
-| --- | --- | --- |
-| **블록 암호** | 정해진 블록 단위로 암호화 | DES, AES, IDEA / (국내) SEED, ARIA, LEA, HIGHT |
-| **스트림 암호** | 1bit 또는 1byte 단위로 암호화 | RC4 *(현재는 보안 용도 비권장)* |
-
----
-
-## 5. 공개키(비대칭키) 암호
-
-- **암호화 키 ≠ 복호화 키**
-- 장점: 키 배포가 상대적으로 쉬움 / 단점: 대칭키보다 느림
-
-| 기반 | 알고리즘 예시 |
-| --- | --- |
-| **소인수분해 기반** | RSA, Rabin |
-| **이산대수/타원곡선 기반** | Diffie–Hellman(키 교환), DSA, ElGamal, ECC |
-
----
-
-## 6. 하이브리드 암호 시스템
-
-실제 서비스(예: HTTPS)는 보통 **대칭키 + 공개키**를 같이 씁니다.
-
-- 데이터(본문)는 빠른 **대칭키**로 암호화
-- 대칭키(세션 키)는 **공개키 암호**로 안전하게 교환/전달
-
-```mermaid
-flowchart LR
-	P["Plaintext"] -->|Encrypt with Session Key| C["Ciphertext"]
-	K["Session Key"] -->|Encrypt with Server Public Key| EK["Encrypted Session Key"]
-	EK --> PKG["Send (EK + C)"]
-	PKG -->|Decrypt EK with Private Key| K2["Session Key"]
-	K2 -->|Decrypt Ciphertext| P2["Plaintext"]
+```text
+security-study/
+├── README.md
+├── foundations/
+│   ├── security-solutions.md
+│   ├── cia-triad.md
+│   └── korean-security-laws.md
+├── cryptography/
+│   ├── cryptography-basics.md
+│   ├── hash-functions.md
+│   ├── symmetric-asymmetric-encryption.md
+│   ├── hybrid-encryption.md
+│   └── certificates-digital-signatures.md
+├── network/
+│   ├── osi-vs-tcp-ip.md
+│   ├── ethernet-arp.md
+│   ├── ip-icmp-ttl.md
+│   ├── tcp-udp-ports.md
+│   ├── tcp-header-and-states.md
+│   ├── network-commands.md
+│   └── vpn.md
+├── web-security/
+│   └── tls-https.md
+├── linux-server/
+│   ├── linux-network-check.md
+│   └── selinux-vsftpd.md
+├── pentest-methodology/
+│   └── ptes-overview.md
+└── labs/
+    ├── README.md
+    └── rocky-linux-network-practice.md
 ```
 
----
+## 문서 목록
 
-## 7. 인증서와 전자서명
+### Foundations
 
-- **CA(Certificate Authority)**: 인증서 발급 기관
-- **인증서(공개키 인증서)**: “이 공개키는 이 주체의 것이다”를 **검증 가능한 형태로 묶은 문서**
-- **전자서명(Digital Signature)**: 보통 “해시값을 개인키로 서명”해서 **무결성 + 서명자 확인 + 부인방지** 제공
+- [보안 솔루션 기본 구조](./foundations/security-solutions.md)
+- [CIA 보안 3요소](./foundations/cia-triad.md)
+- [국내 정보보안 관련 법률 정리](./foundations/korean-security-laws.md)
 
----
+### Cryptography
 
-## 8. CIA 보안 3요소
+- [암호학 기초 용어](./cryptography/cryptography-basics.md)
+- [해시 함수와 무결성 검증](./cryptography/hash-functions.md)
+- [대칭키 암호와 공개키 암호](./cryptography/symmetric-asymmetric-encryption.md)
+- [하이브리드 암호 시스템](./cryptography/hybrid-encryption.md)
+- [인증서와 전자서명](./cryptography/certificates-digital-signatures.md)
 
-| 요소 | 의미 | 대표 위협 | 대표 대응 |
-| --- | --- | --- | --- |
-| **Confidentiality (기밀성)** | 허가된 대상만 접근 | Sniffing, Eavesdropping | 암호화(Encryption), 접근통제 |
-| **Integrity (무결성)** | 변조/삭제/위조 방지 | 변조, 악성코드 | 해시/서명, 접근통제, 감사로그 |
-| **Availability (가용성)** | 필요할 때 정상 이용 | DoS/DDoS, 장애 | 이중화, 레이트 리밋, WAF/방화벽 |
+### Network
 
----
+- [OSI 7계층과 TCP/IP 모델](./network/osi-vs-tcp-ip.md)
+- [Ethernet Frame과 ARP](./network/ethernet-arp.md)
+- [IP, ICMP, TTL](./network/ip-icmp-ttl.md)
+- [TCP, UDP, 포트 번호](./network/tcp-udp-ports.md)
+- [TCP Header와 연결 상태](./network/tcp-header-and-states.md)
+- [네트워크 확인 명령어 정리](./network/network-commands.md)
+- [VPN 개념과 계층](./network/vpn.md)
 
-## 9. OSI 7계층 vs TCP/IP
+### Web Security
 
-### OSI 7 Layer
+- [TLS와 HTTPS](./web-security/tls-https.md)
 
-- **L1 물리 (Physical)**: 전기/광 신호, 케이블, 커넥터, 허브 등
-- **L2 데이터 링크 (Data Link)**: 프레임, MAC, 스위칭(VLAN), 오류 검출(CRC)
-- **L3 네트워크 (Network)**: IP, 라우팅, ICMP
-- **L4 전송 (Transport)**: TCP/UDP, 포트, 종단 간 통신
-- **L5 세션 (Session)**: 세션 생성/유지/종료(대화 제어)
-- **L6 표현 (Presentation)**: 데이터 표현(인코딩), 압축, *암호화 등의 “표현 변환” 관점*
-- **L7 응용 (Application)**: HTTP, DNS, SMTP 등
+### Linux Server
 
-### TCP/IP (일반적 4계층)
+- [Linux에서 네트워크 상태 확인하기](./linux-server/linux-network-check.md)
+- [SELinux와 vsftpd 실습 메모](./linux-server/selinux-vsftpd.md)
 
-- **Link/Network Access**: OSI L1~L2
-- **Internet**: OSI L3
-- **Transport**: OSI L4
-- **Application**: OSI L5~L7
+### Pentest Methodology
 
-> “TLS가 OSI 몇 계층인가”는 문맥에 따라 달라지지만 보통 **전송 계층 위/응용 계층 아래에서 동작하는 보안 계층** 으로 이해할 수 있음. 
-> 
+- [PTES 모의해킹 절차 개요](./pentest-methodology/ptes-overview.md)
 
----
+### Labs
 
-## 10. TLS/HTTPS
+- [실습 메모 모음](./labs/README.md)
+- [Rocky Linux 네트워크 명령어 실습](./labs/rocky-linux-network-practice.md)
 
-- **TLS(Transport Layer Security)**: 현재 표준 암호화 프로토콜
-- **SSL(Secure Sockets Layer)**: TLS의 이전 버전. 현재는 **deprecated(비권장/사실상 사용 금지 수준)**로 보는 게 일반적
-- **HTTPS = HTTP + TLS**
-    - 기밀성(암호화)
-    - 무결성(변조 방지)
-    - 서버 인증(필요 시 클라이언트 인증도 가능)
+## 참고한 사이트
 
----
+학습 중 개념 확인과 Markdown 작성에 참고한 문서입니다.
 
-## 11. VPN 개념과 계층
+- [GitHub Docs - Markdown 작성 문법](https://docs.github.com/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
+- [GitHub Docs - Mermaid 다이어그램 작성](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams)
+- [Shields.io - README Badge 생성](https://shields.io/)
+- [OWASP Web Security Testing Guide](https://owasp.org/www-project-web-security-testing-guide/)
+- [MDN Web Docs - Web Security](https://developer.mozilla.org/en-US/docs/Web/Security)
+- [RFC Editor](https://www.rfc-editor.org/)
 
-**VPN(Virtual Private Network)**: 공용망(인터넷)에서 사설망처럼 안전하게 통신하기 위한 기술
+## 앞으로 추가할 내용
 
-핵심 키워드
+- DNS 레코드와 캐시 흐름
+- UDP Header 구조
+- IP Header 주요 필드
+- 클라우드 보안 기초: 책임 공유 모델, IAM, 네트워크 보안 그룹
+- 가상화와 컨테이너 기초
 
-- **Tunneling(터널링)**: 원래 패킷을 캡슐화해 운반
-- **Authentication(인증)**: 사용자/장비 확인
-- **Encryption(암호화)**: 도청 방지
-- **Integrity(무결성)**: 변조 탐지
+## 주의사항
 
-### 계층별 예시
+- 이 저장소는 학습 노트이며 법률, 보안 진단, 운영 보안에 대한 최종 판단 기준이 아닙니다.
+- 법률 문서는 최신 시행일과 조문을 국가법령정보센터에서 다시 확인해야 합니다.
+- 실습은 개인 학습 환경 또는 명시적으로 허가된 환경에서만 수행합니다.
+- 실제 IP, 계정명, 내부망 정보, 스크린샷 개인정보는 공개 저장소에 올리지 않습니다.
 
-- **L3 VPN: IPsec**
-    - IP 패킷 보호(암호화/무결성/인증)
-    - IKE(키 교환), AH/ESP 등
-- **L2 VPN: L2TP**
-    - L2 프레임 터널링
-    - 보통 **L2TP/IPsec**로 함께 사용
-- **TLS VPN(SSL VPN)**: 브라우저/클라이언트 기반 접근 제어에 유리
+## 체크리스트
 
-추가 메모
-
-- **PPTP**: 오래된 방식. 보안 취약점으로 현재 비권장
-- **L2F**: 구형 터널링(현재는 거의 사용 X)
-- **L2TP**: IETF 표준(RFC 2661)
-
----
-
-## 12. [모의해킹] PTES
-
-```mermaid
-flowchart LR
-	A["1. 대상 선정<br>(Pre-Engagement)"] --> B["2. 정보 수집<br>(Intelligence Gathering)"]
-	B --> C["3. 위협 모델링<br>(Threat Modeling)"]
-	C --> D["4. 취약점 분석<br>(Vulnerability Analysis)"]
-	D --> E["5. 공격<br>(Exploitation)"]
-	E --> F["6. 후속 공격<br>(Post-Exploitation)"]
-	F --> G["7. 결과 보고<br>(Reporting)"]
-```
-
-- **취약점 분석**: 스캔·수동 점검, 오탐 제거, 영향도·재현성 평가
-- **공격**: 침투 가능성 **증명**, 증거(Proof) 확보, 영향 범위 확인
-- **후속 공격**: 권한 상승·횡적 이동 등 추가 영향 평가, 방어 포인트 도출
-- **결과 보고**: 재현 절차·영향·원인·증거 정리, 개선안 및 재점검 권고
+- [ ] 기술적으로 틀린 내용이 없는지 확인했다.
+- [ ] 확인이 필요한 내용은 `확인 필요`로 따로 표시했다.
+- [ ] 위험한 공격 절차가 과하게 포함되어 있지 않은지 확인했다.
+- [ ] 학습 및 방어적 이해 목적임을 README에 명확히 적었다.
+- [ ] 원본에 없는 실무 경험, 프로젝트 경험, 수상 경력, 자격증을 추가하지 않았다.
+- [ ] 파일명과 폴더명이 소문자와 하이픈 기준으로 일관적인지 확인했다.
+- [ ] 내부 링크가 깨지지 않는지 확인했다.
+- [ ] Mermaid 다이어그램이 GitHub에서 정상 표시되는지 확인했다.
+- [ ] 코드블록의 언어 표시가 적절한지 확인했다.
+- [ ] 명령어에 공백 오타가 없는지 확인했다.
+- [ ] 실제 IP, 계정명, 내부망 정보, 스크린샷 개인정보가 노출되지 않는지 확인했다.
+- [ ] Markdown 표가 깨지지 않는지 확인했다.
