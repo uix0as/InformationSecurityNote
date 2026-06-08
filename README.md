@@ -2,7 +2,7 @@
 
 # Security Study Notes
 
-네트워크와 보안 기초를 연결해서 정리한 정보보안 학습 노트입니다.
+네트워크 & 보안 기초 정리
 
 <img src="https://img.shields.io/badge/Security-Study-1F2937?style=for-the-badge">
 <img src="https://img.shields.io/badge/Network-Basics-2563EB?style=for-the-badge">
@@ -16,9 +16,11 @@
 ## 소개
 
 보안 개념을 네트워크 구조, 패킷 흐름, Linux 명령어 결과와 함께 이해하는 데 초점을 두며,
-정보보안 학습 및 방어적 이해를 목적으로 합니다.
 
-허가되지 않은 시스템에 대한 공격, 침투, 스캔을 목적으로 하지 않습니다.
+정보보안 학습 및 방어적 이해를 목적으로 한다. 
+
+
+허가되지 않은 시스템에 대한 공격, 침투, 스캔을 목적으로 하지 않는다. 
 
 ## 다루는 내용
 
